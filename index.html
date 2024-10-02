@@ -2,47 +2,12 @@
 <html lang="en">
 
 <head>
+    <link rel="stylesheet" href="style.css">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>acerola's epic color palettes</title>
+
 </head>
-
-<style>
-    body {
-        background-color: #332F35;
-        color: white;
-    }
-
-    #color-form {
-        margin-bottom: 1em;
-    }
-
-    #click-instructions {
-        display: none;
-    }
-
-    #result {
-        display: flex;
-    }
-
-    #palettes {
-        margin-right: 2em;
-    }
-
-    #details {
-        align-items: center;
-        display: flex;
-        flex-direction: column;
-        padding-top: 1.125em;
-    }
-
-    #details-color {
-        width: 8.75em;
-        height: 8.75em;
-        margin-bottom: .5em;
-    }
-</style>
-
 <body>
     <h1>acerola's epic color palkettes</h1>
     <p>Generate as many palettes as you want until you find one you like. Then take a picture of the palettes and tell Acerola which one you picked.</p>
@@ -56,10 +21,24 @@
             <option value="tetradic complementary">Tetradic Complementary</option>
         </select>
         <label for="color-count">Color count:</label>
-        <input id="color-count" name="color-count" type="number" min="3" max="16" value="8" />
-        <input type="submit" value="Generate" />
+        <input id="color-count" name="color-count" type="number" min="1" max="1024" value="8" />
+        <label for="hueBase">hueBase:</label>
+        <input type="number" id="hueBase"/><br>
+        <label for="hueContrast">hueContrast:</label>
+        <input type="number" id="hueContrast"/><br>
+        <label for="saturationBase">saturationBase:</label>
+        <input type="number" id="saturationBase"/><br>
+        <label for="saturationContrast">saturationContrast:</label>
+        <input type="number" id="saturationContrast"/><br>
+        <label for="luminanceBase">luminanceBase:</label>
+        <input type="number" id="luminanceBase"/><br>
+        <label for="luminanceContrast">luminanceContrast:</label>
+        <input type="number" id="luminanceContrast"/><br>
+        <label for="Generate">Generate:</label>
+        <input type="submit" id="Generate new root"/><br>
     </form>
     <p id="click-instructions">click a color to see hex + rgb</p>
+    <p> root = </p>
     <div id="result">
         <div id="palettes"></div>
         <div id="details">
@@ -72,27 +51,15 @@
     <script>
         const getHexFromRGB = (rgb) => `#${Number(rgb[0]).toString(16).padStart(2, "0")}${Number(rgb[1]).toString(16).padStart(2, "0")}${Number(rgb[2]).toString(16).padStart(2, "0")}`;
 
-        const getFakeResult = () => {
-            const palettesCount = 4;
-            const colorsCounts = 16;
-            const palettes = [];
-            for (let i = 0; i < palettesCount; i++) {
-                const colors = [];
-                for (let j = 0; j < colorsCounts; j++) {
-                    colors.push({
-                        rgb: [Math.floor(Math.random() * 256), Math.floor(Math.random() * 256), Math.floor(Math.random() * 256)]
-                    });
-                }
-                palettes.push({
-                    colors
-                });
-            }
-            return palettes;
-        }
 
         const handleResult = (palettes) => {
             const palettesElement = document.getElementById("palettes");
             palettesElement.innerHTML = "";
+            let count = palettes[0].length;
+            let width = "2em";
+            if(count > 32){
+                width = `${32 * 32 / count}px`;
+            }
             palettes.forEach((palette, paletteIndex) => {
                 const paletteElement = document.createElement("div");
                 palettesElement.appendChild(paletteElement);
@@ -119,7 +86,7 @@
                         detailsRGB.innerText = `RGB: (${color[0]}, ${color[1]}, ${color[2]})`;
                     });
                     paletteColorElement.style.backgroundColor = hex;
-                    paletteColorElement.style.width = "2em";
+                    paletteColorElement.style.width = width;
                     paletteColorElement.style.height = "2em";
                     paletteColorsElement.appendChild(paletteColorElement);
                 }
@@ -136,7 +103,27 @@
             detailsColor.style.backgroundColor = "";
             detailsHex.innerText = "";
             detailsRGB.innerText = "";
-            const result = generatePalettes(colorMode.value, colorCount.value);
+
+            const hueBase = document.getElementById("hueBase");
+            const hueContrast = document.getElementById("hueContrast");
+            const saturationBase = document.getElementById("saturationBase");
+            const saturationContrast = document.getElementById("saturationContrast");
+            const luminanceBase = document.getElementById("luminanceBase");
+            const luminanceContrast = document.getElementById("luminanceContrast");
+
+            settings = {
+                hueBase: hueBase,
+                hueContrast: hueContrast,
+                saturationBase: saturationBase,
+                saturationContrast: saturationContrast,
+                luminanceBase: luminanceBase,
+                luminanceContrast: luminanceContrast,
+                fixed: Math.random(),
+                saturationConstant: true,
+                colorCount: COLOR_COUNT,
+            }
+
+            const result = generatePalettes(colorMode.value, colorCount.value, settings);
             handleResult(result);
             document.getElementById("click-instructions").style.display = "block";
         });

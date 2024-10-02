@@ -1,0 +1,33 @@
+body {
+    background-color: #332F35;
+    color: white;
+}
+
+#color-form {
+    margin-bottom: 1em;
+}
+
+#click-instructions {
+    display: none;
+}
+
+#result {
+    display: flex;
+}
+
+#palettes {
+    margin-right: 2em;
+}
+
+#details {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    padding-top: 1.125em;
+}
+
+#details-color {
+    width: 8.75em;
+    height: 8.75em;
+    margin-bottom: .5em;
+}
